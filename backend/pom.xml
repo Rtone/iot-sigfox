@@ -52,6 +52,14 @@
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/fr.rtone/sigfox-client -->
+        <dependency>
+            <groupId>fr.rtone</groupId>
+            <artifactId>sigfox-client</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
     </dependencies>
 
 
