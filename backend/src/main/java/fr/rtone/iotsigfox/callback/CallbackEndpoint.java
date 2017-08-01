@@ -7,12 +7,17 @@ import fr.rtone.iotsigfox.dto.CallbackDataDTO;
 import fr.rtone.iotsigfox.dto.SigfoxDataDTO;
 import fr.rtone.iotsigfox.repository.DeviceRepository;
 import fr.rtone.iotsigfox.repository.MeasureRepository;
+import fr.rtone.iotsigfox.util.Converter;
 import fr.rtone.iotsigfox.websocket.SigfoxDataHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,18 +103,27 @@ public class CallbackEndpoint {
                 .map(SigfoxDataDTO::new)
                 .collect(Collectors.toList());
         dataHandler.pushSigfoxData(sigfoxData);
+        Duration.between(LocalDateTime.now(),
+                LocalDateTime.ofInstant(device.getLastTimeSync().toInstant(), ZoneId.systemDefault())).toDays();
 
-        return "0000000000";
+        // Send downlink payload
+        if (isLastUpdateBeforeWeek(device)) {
+            long timestamp = ZonedDateTime.now().toEpochSecond();
+            // payload is 8 bytes hex string
+            String payload = Converter.longToBigEndianHex(timestamp, 16);
+            return payload;
+        }
+
+        return null;
     }
 
-    @PostMapping(value = "/downlink", produces = "application/json")
-    public String downlinkEndpoint(CallbackDataDTO callbackData) {
-
-        String hexaColor = "ffff000000000000";
-
-        String response = "{ \"" + callbackData.getDevice() + "\": { \"downlinkData\":\"ffff000000000000\" } }";
-        System.out.println(response);
-        return response;
+    private boolean isLastUpdateBeforeWeek(Device device) {
+        long days = Duration.between(LocalDateTime.now(),
+                LocalDateTime.ofInstant(device.getLastTimeSync().toInstant(), ZoneId.systemDefault())).toDays();
+        if (days > 7) {
+            return true;
+        }
+        return false;
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
