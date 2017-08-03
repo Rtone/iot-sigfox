@@ -48,12 +48,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.url.subscribe(url => this.isGLobal = this.location.path() == '/global');
-    this.dataService.getProfile()
-      .subscribe(profile => {if (profile == 'master') {
-        this.router.navigate(['/global']);
-        this.isGLobal = true;
-      }
-      });
   }
 
   grabData(): void {

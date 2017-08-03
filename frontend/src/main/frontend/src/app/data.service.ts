@@ -9,7 +9,6 @@ import {Http, Response} from "@angular/http";
 
 const WS_URL = '/data';
 const HTTP_URL = '/api/messages';
-const HTTP_PROFILE_URL = '/api/profile';
 const HTTP_DEVICE_URL = '/api/device/messages';
 
 @Injectable()
@@ -31,11 +30,6 @@ export class DataService {
   getDeviceMessages(): Observable<Array<DataModel>> {
     return this.http.get(HTTP_DEVICE_URL)
       .map(this.extractData);
-  }
-
-  getProfile(): Observable<string> {
-    return this.http.get(HTTP_PROFILE_URL)
-      .map(res => res.text() as string || '');
   }
 
   private extractData(res: Response): Array<DataModel> {
