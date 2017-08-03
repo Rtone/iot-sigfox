@@ -1,0 +1,20 @@
+version: '2'
+services:
+  sigfox-iot-app:
+    image: sigfox-iot
+    links:
+      - sigfox-mysql:mysql
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/sigfox?useUnicode=true&characterEncoding=utf8&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=
+      - APP_SLEEP=10
+    ports:
+      - 8080:8080
+  sigfox-mysql:
+      image: mysql:5.7.13
+      environment:
+          - MYSQL_USER=root
+          - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+          - MYSQL_DATABASE=sigfox
+      command: mysqld --lower_case_table_names=1 --skip-ssl

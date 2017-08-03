@@ -60,6 +60,13 @@
             <version>1.0.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>fr.rtone</groupId>
+            <artifactId>frontend</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+
     </dependencies>
 
 
@@ -75,6 +82,31 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.10</version>
+                <executions>
+                    <execution>
+                        <id>build-image</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <imageName>sigfox-iot</imageName>
+                    <dockerDirectory>docker-compose</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.war</include>
+                        </resource>
+                    </resources>
+                </configuration>
             </plugin>
         </plugins>
     </build>
